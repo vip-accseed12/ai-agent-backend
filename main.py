@@ -9,15 +9,12 @@ def home():
     return "AI Agent Backend Running 🚀"
 
 
-@app.route("/generate", methods=["POST"])
-def generate():
+@app.route("/v1/chat/completions", methods=["POST"])
+def chat_completions():
     try:
         data = request.get_json()
 
-        if not data or "prompt" not in data:
-            return jsonify({"error": "Prompt is required"}), 400
-
-        prompt = data["prompt"]
+        messages = data.get("messages", [])
 
         response = requests.post(
             "https://gen.pollinations.ai/v1/chat/completions",
@@ -27,17 +24,11 @@ def generate():
             },
             json={
                 "model": "openai",
-                "messages": [
-                    {"role": "user", "content": prompt}
-                ]
+                "messages": messages
             }
         )
 
-        pollination_response = response.json()
-
-        return jsonify({
-            "reply": pollination_response["choices"][0]["message"]["content"]
-        })
+        return jsonify(response.json())
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
