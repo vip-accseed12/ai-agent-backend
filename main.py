@@ -33,7 +33,11 @@ def generate():
             }
         )
 
-        return jsonify(response.json())
+        pollination_response = response.json()
+
+        return jsonify({
+            "reply": pollination_response["choices"][0]["message"]["content"]
+        })
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
