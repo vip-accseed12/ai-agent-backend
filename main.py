@@ -8,11 +8,16 @@ app = Flask(__name__)
 def home():
     return "AI Agent Backend Running 🚀"
 
+
 @app.route("/generate", methods=["POST"])
 def generate():
     try:
-        data = request.json
-        prompt = data.get("prompt")
+        data = request.get_json()
+
+        if not data or "prompt" not in data:
+            return jsonify({"error": "Prompt is required"}), 400
+
+        prompt = data["prompt"]
 
         response = requests.post(
             "https://gen.pollinations.ai/v1/chat/completions",
@@ -21,20 +26,14 @@ def generate():
                 "Content-Type": "application/json"
             },
             json={
-                "model": "kimi-k2",
+                "model": "openai",
                 "messages": [
                     {"role": "user", "content": prompt}
                 ]
             }
         )
 
-        return jsonify({
-            "status_code": response.status_code,
-            "raw_response": response.text
-        })
+        return jsonify(response.json())
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-if __name__ == "__main__":
-    app.run()
