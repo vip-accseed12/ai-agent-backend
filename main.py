@@ -10,24 +10,31 @@ def home():
 
 @app.route("/generate", methods=["POST"])
 def generate():
-    data = request.json
-    prompt = data.get("prompt")
+    try:
+        data = request.json
+        prompt = data.get("prompt")
 
-    response = requests.post(
-        "https://api.pollinations.ai/v1/chat/completions",
-        headers={
-            "Authorization": f"Bearer {os.getenv('POLLINATIONS_API_KEY')}",
-            "Content-Type": "application/json"
-        },
-        json={
-            "model": "kimi-k2",
-            "messages": [
-                {"role": "user", "content": prompt}
-            ]
-        }
-    )
+        response = requests.post(
+            "https://api.pollinations.ai/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {os.getenv('POLLINATIONS_API_KEY')}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": "kimi-k2",
+                "messages": [
+                    {"role": "user", "content": prompt}
+                ]
+            }
+        )
 
-    return jsonify(response.json())
+        return jsonify({
+            "status_code": response.status_code,
+            "raw_response": response.text
+        })
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
     app.run()
