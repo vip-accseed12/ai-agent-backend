@@ -15,7 +15,7 @@ def generate():
         prompt = data.get("prompt")
 
         response = requests.post(
-            "https://api.pollinations.ai/v1/chat/completions",
+            "https://gen.pollinations.ai/v1/chat/completions",
             headers={
                 "Authorization": f"Bearer {os.getenv('POLLINATIONS_API_KEY')}",
                 "Content-Type": "application/json"
